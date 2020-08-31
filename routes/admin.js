@@ -74,7 +74,9 @@ router.get("/emails", function(req, res, next) {
 
 router.get("/reservations", function(req, res, next) {
 
-    res.render("admin/reservations")
+    res.render("admin/reservations", {
+        date: {},
+    })
 
 })
 
