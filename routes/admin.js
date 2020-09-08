@@ -1,9 +1,10 @@
-var express = require("express");
-var users = require("./../public/inc/users")
-var admin = require("./../public/inc/admin")
-var router = express.Router();
+let express = require("express");
+let users = require("./../public/inc/users");
+let admin = require("./../public/inc/admin");
 
+let menus = require("./../public/inc/menus");
 
+let router = express.Router();
 
 router.use(function(req, res, next){
 
@@ -32,11 +33,19 @@ router.get("/logout", function(req, res, next) {
 })
 
 router.get("/", function(req, res, next) {
+
+    admin.dashboard().then(data => {
+
+        res.render("admin/index", admin.getParams(req, {
+            data
+        })).catch( err => {
+            console.error(err);
+        })
+
+    })
   
 
-    res.render("admin/index", {
-        menus: req.menus
-    })
+   
 
 })
 
@@ -69,44 +78,41 @@ router.post("/login", function(req, res, next) {
 })
 
 router.get("/menus", function(req, res, next) {
+    menus.getMenus().then(data => {
 
-    res.render("admin/menus", {
-        menus: req.menus
+        res.render("admin/menus", admin.getParams(req, {
+            data
+        }))
+
     })
+
+    
 
 })
 
 router.get("/emails", function(req, res, next) {
 
-    res.render("admin/emails", {
-        menus: req.menus
-    })
+    res.render("admin/emails", admin.getParams(req))
 
 })
 
 router.get("/reservations", function(req, res, next) {
 
-    res.render("admin/reservations", {
-        date: {},
-        menus: req.menus
-
-    })
+    res.render("admin/reservations", admin.getParams(req, {
+        date: {}
+    }))
 
 })
 
 router.get("/contacts", function(req, res, next) {
 
-    res.render("admin/contacts", {
-        menus: req.menus
-    })
+    res.render("admin/contacts", admin.getParams(req))
 
 })
 
 router.get("/users", function(req, res, next) {
 
-    res.render("admin/users", {
-        menus: req.menus
-    })
+    res.render("admin/users", admin.getParams(req))
 
 })
 module.exports = router;
