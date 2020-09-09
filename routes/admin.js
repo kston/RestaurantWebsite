@@ -1,10 +1,10 @@
-let express = require("express");
-let users = require("./../public/inc/users");
-let admin = require("./../public/inc/admin");
+var express = require("express");
+var users = require("./../public/inc/users");
+var admin = require("./../public/inc/admin");
 
-let menus = require("./../public/inc/menus");
+var menus = require("./../public/inc/menus");
 
-let router = express.Router();
+var router = express.Router();
 
 router.use(function(req, res, next){
 
@@ -89,6 +89,16 @@ router.get("/menus", function(req, res, next) {
     
 
 })
+
+router.post("/menus", function(req, res, next) {
+    menus.save(req.fields, req.files).then(results => {
+        res.send(results);
+    }).catch( err => {
+        res.send(err);
+    })
+})
+
+
 
 router.get("/emails", function(req, res, next) {
 
