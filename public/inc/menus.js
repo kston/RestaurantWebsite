@@ -2,43 +2,57 @@ let con = require('./db');
 let path = require('path');
 
 module.exports = {
-  getMenus() {
+	getMenus() {
+		return new Promise((resolve, reject) => {
+			con.query(`SELECT * FROM tb_menus ORDER BY title`, (err, results) => {
+				if (err) {
+					reject(err);
+				} else {
+					resolve(results);
+				}
+			});
+		});
+	},
+	save(fields, files) {
+		return new Promise((resolve, reject) => {
+			fields.photo = `images/${path.parse(files.photo.path).base}`;
 
-    return new Promise((resolve, reject) => {
+			let query,
+				queryPhoto = '',
+				params = [fields.title, fields.description, fields.price];
 
-      con.query(`SELECT * FROM tb_menus ORDER BY title`, (err, results) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(results);
-        }
-      })
+			if (files.photo.name) {
+				queryPhoto = `,photo = ?`;
+				params.push(fields.photo);
+			}
 
+			if (parseInt(fields.id) > 0) {
+				params.push(fields.id);
+				query = ` 
+				UPDATE tb_menus  
+				SET title = ?,  
+				description = ?,  
+				price = ?  
+				 ${queryPhoto}
+		  WHERE id = ?
 
-    })
+        `;
+			} else {
+				if (!files.photo.name) {
+					reject('Envie a foto do prato!');
+				}
 
-  },
-  save(fields, files) {
-    return new Promise((resolve, reject) => {
+				query = `  INSERT INTO tb_menus (title, description, price, photo) VALUES(?, ?, ?, ?)
+        `;
+			}
 
-      fields.photo = `images/${path.parse(files.photo.path).base}`;
-
-      con.query(`
-      
-      INSERT INTO tb_menus (title, description, price, photo) VALUES(?, ?, ?, ?)
-      `, [
-        fields.title,
-        fields.description,
-        fields.price,
-        fields.photo
-      ], (err, results) => {
-        if(err) {
-          reject(err);
-        } else {
-          resolve(results);
-        }
-      } )
-
-    })
-  }
-}
+			con.query(query, params, (err, results) => {
+				if (err) {
+					reject(err);
+				} else {
+					resolve(results);
+				}
+			});
+		});
+	},
+};
