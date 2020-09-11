@@ -242,7 +242,7 @@
 
 	formUpdate
 		.save()
-		.then(json => {
+		.then((json) => {
 			window.location.reload();
 		})
 		.catch((err) => {
@@ -269,6 +269,28 @@
 			}
 
 			$('#modal-update').modal('show');
+		});
+	});
+
+	[...document.querySelectorAll('.btn-delete')].forEach((btn) => {
+		btn.addEventListener('click', (e) => {
+			let tr = e.path.find((el) => {
+				return el.tagName.toUpperCase() === 'TR';
+			});
+
+			let data = JSON.parse(tr.dataset.row);
+
+			if (confirm(`Deseja excluir o menu: ${data.title}`)) {
+				fetch(`/admin/menus/${data.id}`, {
+					method: 'DELETE',
+				})
+					.then((res) => {
+						res.json();
+					})
+					.then((json) => {
+						window.location.reload();
+					});
+			}
 		});
 	});
 </script>
