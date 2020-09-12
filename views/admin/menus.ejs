@@ -108,6 +108,7 @@
 						<label for="inputPriceCreate">Preço</label>
 						<input
 							type="number"
+							step="0.01"
 							class="form-control"
 							id="inputPriceCreate"
 							name="price"
@@ -182,6 +183,7 @@
 						<label for="inputPriceUpdate">Preço</label>
 						<input
 							type="number"
+							step="0.01"
 							class="form-control"
 							id="inputPriceUpdate"
 							name="price"
@@ -220,77 +222,27 @@
 
 <%- include('inc/footer') -%>
 
+<script src="/js/Grid.js"></script>
 <script src="/js/MyFileReader.js"></script>
+
 <script src="/js/formsalve.js"></script>
 
 <script>
 	new MyFileReader('#modal-create [type=file]', '#modal-create img');
 	new MyFileReader('#modal-update [type=file]', '#modal-update img');
 
-	let formCreate = document.querySelector('#modal-create form');
-
-	formCreate
-		.save()
-		.then((json) => {
-			window.location.reload();
-		})
-		.catch((err) => {
-			console.log(err);
-		});
-
-	let formUpdate = document.querySelector('#modal-update form');
-
-	formUpdate
-		.save()
-		.then((json) => {
-			window.location.reload();
-		})
-		.catch((err) => {
-			console.log(err);
-		});
-
-	[...document.querySelectorAll('.btn-update')].forEach((btn) => {
-		btn.addEventListener('click', (e) => {
-			let tr = e.path.find((el) => {
-				return el.tagName.toUpperCase() === 'TR';
-			});
-
-			let data = JSON.parse(tr.dataset.row);
-
-			for (let name in data) {
-				switch (name) {
-					case 'photo':
-						formUpdate.querySelector('img').src = '/' + data[name];
-						break;
-					default:
-						let input = formUpdate.querySelector(`[name=${name}]`);
-						if (input) input.value = data[name];
-				}
+	new Grid({
+		deleteMessage: 'Deseja excluir o menu: ${data.title}',
+		deleteURL: '/admin/menus/${data.id}',
+		onShow: (form, name, data) => {
+			let input = form.querySelector(`[name=${name}]`);
+			switch (name) {
+				case 'photo':
+					form.querySelector('img').src = '/' + data[name];
+					break;
+				default:
+					if (input) input.value = data[name];
 			}
-
-			$('#modal-update').modal('show');
-		});
-	});
-
-	[...document.querySelectorAll('.btn-delete')].forEach((btn) => {
-		btn.addEventListener('click', (e) => {
-			let tr = e.path.find((el) => {
-				return el.tagName.toUpperCase() === 'TR';
-			});
-
-			let data = JSON.parse(tr.dataset.row);
-
-			if (confirm(`Deseja excluir o menu: ${data.title}`)) {
-				fetch(`/admin/menus/${data.id}`, {
-					method: 'DELETE',
-				})
-					.then((res) => {
-						res.json();
-					})
-					.then((json) => {
-						window.location.reload();
-					});
-			}
-		});
+		},
 	});
 </script>

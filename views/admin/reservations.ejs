@@ -278,74 +278,23 @@
 </div>
 <%- include('inc/footer') -%>
 
+<script src="/js/Grid.js"></script>
 <script src="/js/moment.min.js"></script>
 <script src="/js/formsalve.js"></script>
 
 <script>
-	let formCreate = document.querySelector('#modal-create form');
-
-	formCreate
-		.save()
-		.then((json) => {
-			window.location.reload();
-		})
-		.catch((err) => {
-			console.log(err);
-		});
-
-	let formUpdate = document.querySelector('#modal-update form');
-
-	formUpdate
-		.save()
-		.then((json) => {
-			window.location.reload();
-		})
-		.catch((err) => {
-			console.log(err);
-		});
-
-	[...document.querySelectorAll('.btn-update')].forEach((btn) => {
-		btn.addEventListener('click', (e) => {
-			let tr = e.path.find((el) => {
-				return el.tagName.toUpperCase() === 'TR';
-			});
-
-			let data = JSON.parse(tr.dataset.row);
-
-			for (let name in data) {
-				let input = formUpdate.querySelector(`[name=${name}]`);
-				switch (name) {
-					case 'date':
-						if (input) input.value = moment(data[name]).format('YYYY-MM-DD');
-						break;
-					default:
-						if (input) input.value = data[name];
-				}
+	new Grid({
+		deleteMessage: 'Confirma o cancelamento da reserva: ${data.name}?',
+		deleteURL: '/admin/reservations/${data.id}',
+		onShow: (form, name, data) => {
+			let input = form.querySelector(`[name=${name}]`);
+			switch (name) {
+				case 'date':
+					if (input) input.value = moment(data[name]).format('YYYY-MM-DD');
+					break;
+				default:
+					if (input) input.value = data[name];
 			}
-
-			$('#modal-update').modal('show');
-		});
-	});
-
-	[...document.querySelectorAll('.btn-delete')].forEach((btn) => {
-		btn.addEventListener('click', (e) => {
-			let tr = e.path.find((el) => {
-				return el.tagName.toUpperCase() === 'TR';
-			});
-
-			let data = JSON.parse(tr.dataset.row);
-
-			if (confirm(`Confirma o cancelamento da reserva: ${data.name}`)) {
-				fetch(`/admin/reservations/${data.id}`, {
-					method: 'DELETE',
-				})
-					.then((res) => {
-						res.json();
-					})
-					.then((json) => {
-						window.location.reload();
-					});
-			}
-		});
+		},
 	});
 </script>
