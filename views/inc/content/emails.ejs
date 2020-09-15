@@ -1,0 +1,48 @@
+<%- include('inc/page-header') -%> <%- include("inc/content/menus") -%>
+<%-include("inc/content/text") -%>
+
+<div id="gtco-subscribe">
+	<div class="gtco-container">
+		<div class="row animate-box">
+			<div class="col-md-8 col-md-offset-2 text-center gtco-heading">
+				<h2 class="cursive-font">Se inscrever</h2>
+				<p>Receba as novidades do nosso restaurante</p>
+			</div>
+		</div>
+		<div class="row animate-box">
+			<div class="col-md-8 col-md-offset-2">
+				<form action="/emails" method="POST">
+					<div class="col-md-6 col-sm-6">
+						<% if (typeof error === "string") { %>
+						<div class="alert alert-danger"><%= error%></div>
+
+						<% }%> <% if (typeof success === "string") { %>
+						<div class="alert alert-success"><%= success%></div>
+
+						<% }%>
+						<div class="form-group">
+							<label for="email" class="sr-only">E-mail</label>
+							<input
+								type="email"
+								name="email"
+								class="form-control"
+								id="email"
+								placeholder="Digite seu email"
+							/>
+						</div>
+					</div>
+					<div class="col-md-6 col-sm-6">
+						<button
+							type="submit"
+							class="btn btn-default btn-block btn-subscribe"
+						>
+							Inscrever
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<%-include('inc/page-footer') -%>

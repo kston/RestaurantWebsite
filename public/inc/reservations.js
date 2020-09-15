@@ -1,6 +1,16 @@
 var con = require('./db');
 
 module.exports = {
+	render(req, res, error, success) {
+		res.render('reservations', {
+			title: 'Reserva - Restaurante Saboroso!',
+			background: 'images/img_bg_2.jpg',
+			h1: 'Reserve uma Mesa!',
+			body: req.body,
+			error,
+			success,
+		});
+	},
 	getMenus() {
 		return new Promise((resolve, reject) => {
 			con.query(
@@ -15,7 +25,7 @@ module.exports = {
 			);
 		});
 	},
-	save(fields, files) {
+	save(fields) {
 		return new Promise((resolve, reject) => {
 			let query,
 				params = [

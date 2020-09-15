@@ -1,4 +1,4 @@
-HTMLFormElement.prototype.save = function() {
+HTMLFormElement.prototype.save = function (configs) {
 	let form = this;
 
 	return new Promise((resolve, reject) => {
@@ -11,14 +11,17 @@ HTMLFormElement.prototype.save = function() {
 				method: form.method,
 				body: formData,
 			})
-				.then((response) => {
-					response.json();
-				})
+				.then((response) => response.json())
 				.then((json) => {
-					resolve(json);
+					if (json.error) {
+						if (typeof configs.failure === 'function')
+							configs.failure(json.error);
+					} else {
+						if (typeof configs.failure === 'function') configs.success(json);
+					}
 				})
 				.catch((err) => {
-					reject(err);
+					if (typeof configs.failure === 'function') configs.failure(err);
 				});
 		});
 	});
