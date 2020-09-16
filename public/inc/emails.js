@@ -1,13 +1,6 @@
 var con = require('./db');
 
 module.exports = {
-	render(req, res, error, success) {
-		res.render('emails', {
-			body: req.body,
-			error,
-			success,
-		});
-	},
 	getEmails() {
 		return new Promise((resolve, reject) => {
 			con.query(`SELECT * FROM tb_emails`, (err, results) => {
@@ -35,7 +28,7 @@ module.exports = {
 		return new Promise((resolve, reject) => {
 			con.query(
 				`
-   			 INSERT INTO tb_emails (email) values(?, ?, ? )
+   			 INSERT INTO tb_emails (email) values(?)
     `,
 				[fields.email],
 				(err, results) => {
