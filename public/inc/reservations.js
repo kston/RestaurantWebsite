@@ -1,4 +1,5 @@
 var con = require('./db');
+const Pagination = require('./Pagination');
 
 module.exports = {
 	render(req, res, error, success) {
@@ -11,20 +12,37 @@ module.exports = {
 			success,
 		});
 	},
-	getMenus() {
+	getReservations(req) {
 		return new Promise((resolve, reject) => {
-			con.query(
-				`SELECT * FROM tb_reservations ORDER BY date DESC`,
-				(err, results) => {
-					if (err) {
-						reject(err);
-					} else {
-						resolve(results);
-					}
-				}
+			let page = req.query.page;
+			let start = req.query.start;
+			let end = req.query.end;
+
+			if (!page) page = 1;
+			let params = [];
+			if (start && end) params.push(start, end);
+
+			let pag = new Pagination(
+				`SELECT SQL_CALC_FOUND_ROWS * FROM tb_reservations 
+				${start && end ? 'WHERE date BETWEEN ? AND  ?' : ''}
+				ORDER BY name LIMIT ?, ?`,
+				params
 			);
+
+			pag
+				.getPage(page)
+				.then((data) => {
+					resolve({
+						data,
+						links: pag.getNavigation(req.query),
+					});
+				})
+				.catch((err) => {
+					reject(err);
+				});
 		});
 	},
+
 	save(fields) {
 		return new Promise((resolve, reject) => {
 			let query,
