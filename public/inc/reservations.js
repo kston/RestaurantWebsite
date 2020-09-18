@@ -84,6 +84,30 @@ module.exports = {
 		});
 	},
 
+	savefront(fields) {
+		return new Promise((resolve, reject) => {
+			let query,
+				params = [
+					fields.name,
+					fields.email,
+					fields.people,
+					fields.date,
+					fields.time,
+				];
+
+			query = `  INSERT INTO tb_reservations (name, email, people, date, time) VALUES(?, ?, ?, ?, ?);
+        `;
+
+			con.query(query, params, (err, results) => {
+				if (err) {
+					reject(err);
+				} else {
+					resolve(results);
+				}
+			});
+		});
+	},
+
 	delete(id) {
 		return new Promise((resolve, reject) => {
 			con.query(
@@ -128,6 +152,30 @@ module.exports = {
 							values.push(row.total);
 						});
 						resolve({ months, values });
+					}
+				}
+			);
+		});
+	},
+
+	dashboard() {
+		return new Promise((resolve, reject) => {
+			con.query(
+				`
+	
+	SELECT
+	(SELECT COUNT(*) FROM tb_contacts) AS nrcontacts,
+	(SELECT COUNT(*) FROM tb_menus) AS nrmenus,
+	(SELECT COUNT(*) FROM tb_reservations) AS nrreservations,
+	(SELECT COUNT(*) FROM tb_users) AS nrusers
+	
+	
+	`,
+				(err, results) => {
+					if (err) {
+						reject(err);
+					} else {
+						resolve(results[0]);
 					}
 				}
 			);
